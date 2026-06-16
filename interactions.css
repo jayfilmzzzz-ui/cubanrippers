@@ -1,0 +1,143 @@
+/* ============================================================
+   Cuban Rippers V2 — interaction layer (devdemon).
+   Loads AFTER brand.css. Pack-rip (hero moment) + card-flip +
+   CSS card-back. Uses Picaso's tokens (--card-c, --foil, --cat-*).
+   Honors prefers-reduced-motion. Zero new colors — palette via tokens.
+   ============================================================ */
+
+/* ===== PACKS section (replaces flat lanes) ===== */
+.packs{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;perspective:1400px}
+@media(max-width:900px){.packs{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.packs{grid-template-columns:1fr 1fr;gap:14px}}
+
+.pack{position:relative;border:none;background:none;padding:0;cursor:grab;
+  aspect-ratio:896/1200;transform-style:preserve-3d;
+  transition:transform .25s cubic-bezier(.34,1.4,.5,1),filter .25s;
+  animation:packBob 5.5s ease-in-out infinite}
+.pack:nth-child(2){animation-delay:-1.2s}.pack:nth-child(3){animation-delay:-2.4s}.pack:nth-child(4){animation-delay:-3.6s}
+@keyframes packBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.pack:hover{filter:drop-shadow(0 18px 38px rgba(0,0,0,.6))}
+.pack:active{cursor:grabbing}
+
+/* the stage holds the pack image + all rip pieces */
+.pack-stage{position:absolute;inset:0;transform-style:preserve-3d}
+.pack-img,.pack-half{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
+  filter:drop-shadow(0 14px 30px color-mix(in srgb,var(--card-c,#fff) 22%,transparent))}
+/* idle holo shimmer + category glow */
+.pack-glow{position:absolute;inset:6%;border-radius:14px;z-index:-1;
+  background:radial-gradient(60% 60% at 50% 40%,var(--card-c,#fff),transparent 70%);opacity:.28;filter:blur(26px);
+  transition:opacity .25s}
+.pack:hover .pack-glow{opacity:.55}
+.pack-shine{position:absolute;inset:0;pointer-events:none;mix-blend-mode:screen;opacity:.0;
+  background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.55) 48%,transparent 58%);
+  transform:translateX(-120%);transition:opacity .2s}
+.pack:hover .pack-shine{opacity:.9;animation:packSweep 1.1s ease-in-out infinite}
+@keyframes packSweep{0%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
+
+/* per-category emblem — filled white silhouette + accent internals + holo lift */
+.pack-emblem{position:absolute;top:46%;left:50%;width:40%;transform:translate(-50%,-50%);z-index:2;
+  color:var(--card-c,#fff);pointer-events:none;
+  filter:drop-shadow(0 3px 7px rgba(0,0,0,.65)) drop-shadow(0 0 10px color-mix(in srgb,var(--card-c,#fff) 70%,transparent))}
+.pack-emblem svg{width:100%;height:auto;display:block}
+.pack.ripping .pack-emblem{opacity:0;transition:opacity .12s}
+
+/* code-overlaid brand lockup (top) + category name (bottom) */
+.pack-lockup{position:absolute;top:7%;left:0;right:0;display:flex;justify-content:center;z-index:3;pointer-events:none}
+.pack-lockup img{width:42%;filter:drop-shadow(0 2px 8px rgba(0,0,0,.7))}
+.pack-name{position:absolute;bottom:5%;left:0;right:0;text-align:center;z-index:3;pointer-events:none;
+  font-family:var(--font-display,sans-serif);text-transform:uppercase;font-size:clamp(15px,1.5vw,20px);letter-spacing:.04em;
+  color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.8),0 0 14px var(--card-c,#fff)}
+.pack-cta{position:absolute;bottom:-26px;left:0;right:0;text-align:center;font-family:var(--font-display);font-size:11px;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--card-c,#fff);opacity:0;transition:opacity .2s}
+.pack:hover .pack-cta{opacity:.95}
+
+/* halves hidden until rip */
+.pack-half{opacity:0}
+.pack-half .ph-img{position:absolute;top:0;height:100%;width:200%;max-width:none;object-fit:contain}
+.pack-half.left{overflow:hidden;clip-path:polygon(0 0,100% 0,92% 8%,100% 16%,90% 26%,100% 36%,91% 47%,100% 58%,90% 68%,100% 78%,92% 90%,100% 100%,0 100%)}
+.pack-half.left .ph-img{left:0}
+.pack-half.right{overflow:hidden;clip-path:polygon(8% 0,100% 0,100% 100%,8% 100%,0 90%,10% 78%,0 68%,9% 58%,0 47%,9% 36%,0 26%,10% 16%,0 8%)}
+.pack-half.right .ph-img{right:0}
+
+/* burst + shards + spill cards (revealed on rip) */
+.pack-burst{position:absolute;top:0;bottom:0;left:48%;width:4%;z-index:2;opacity:0;pointer-events:none;
+  background:linear-gradient(var(--card-c,#fff),#fff,var(--card-c,#fff));filter:blur(6px)}
+.pack-shards{position:absolute;inset:0;z-index:4;pointer-events:none}
+.pack-shards i{position:absolute;top:50%;left:50%;width:8px;height:8px;border-radius:2px;background:var(--card-c,#fff);
+  box-shadow:0 0 10px var(--card-c,#fff);opacity:0}
+.pack-spill{position:absolute;inset:0;z-index:1;pointer-events:none}
+.pack-spill b{position:absolute;left:50%;top:46%;width:30%;aspect-ratio:3/4;margin-left:-15%;border-radius:7px;
+  background:linear-gradient(150deg,#fff2,#0000),var(--surface-2,#1f1729);border:1px solid var(--card-c,#fff);
+  box-shadow:0 0 18px color-mix(in srgb,var(--card-c,#fff) 50%,transparent);opacity:0;
+  background-image:var(--foil);background-size:200% 200%}
+
+/* ---- RIP animation (triggered by .ripping) ---- */
+.pack.ripping{animation:none;cursor:default}
+.pack.ripping .pack-img{opacity:0;transition:opacity .12s}
+.pack.ripping .pack-shine,.pack.ripping .pack-lockup,.pack.ripping .pack-name,.pack.ripping .pack-cta{opacity:0}
+.pack.ripping .pack-half{opacity:1}
+.pack.ripping .pack-half.left{animation:ripLeft .7s cubic-bezier(.34,1.56,.64,1) forwards}
+.pack.ripping .pack-half.right{animation:ripRight .7s cubic-bezier(.34,1.56,.64,1) forwards}
+.pack.ripping .pack-burst{animation:ripBurst .55s ease-out forwards}
+.pack.ripping .pack-shards i{animation:ripShard .6s ease-out forwards}
+.pack.ripping .pack-spill b{animation:ripSpill .7s cubic-bezier(.34,1.56,.64,1) forwards}
+@keyframes ripLeft{0%{transform:none}28%{transform:translateX(-2%) rotate(-2deg)}100%{transform:translateX(-58%) translateY(34%) rotate(-15deg);opacity:0}}
+@keyframes ripRight{0%{transform:none}28%{transform:translateX(2%) rotate(2deg)}100%{transform:translateX(58%) translateY(34%) rotate(15deg);opacity:0}}
+@keyframes ripBurst{0%{opacity:0;transform:scaleY(.2)}30%{opacity:1;transform:scaleY(1)}100%{opacity:0;transform:scaleX(3) scaleY(1.1)}}
+@keyframes ripShard{0%{opacity:1;transform:translate(-50%,-50%) scale(.4)}100%{opacity:0;transform:translate(var(--sx,40px),var(--sy,-60px)) rotate(220deg) scale(1)}}
+@keyframes ripSpill{0%{opacity:0;transform:translateY(0) scale(.5) rotate(var(--sr,0deg))}40%{opacity:1}100%{opacity:0;transform:translateY(-46%) scale(1.15) rotate(var(--sr,0deg));filter:blur(2px)}}
+
+/* full-screen holo wipe on route */
+.rip-wipe{position:fixed;inset:0;z-index:120;pointer-events:none;opacity:0;
+  background:radial-gradient(60% 60% at 50% 50%,var(--wipe-c,#fff),transparent 70%),var(--foil);background-size:cover,200% 200%}
+.rip-wipe.go{animation:ripWipe .6s ease-out forwards}
+@keyframes ripWipe{0%{opacity:0}35%{opacity:.85}100%{opacity:0}}
+
+/* ===== CARD-FLIP (product cards) ===== */
+.product-card{perspective:1100px}
+.card-flip{position:relative;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.4,.2,.2,1)}
+.product-card.flipped .card-flip{transform:rotateY(180deg)}
+.card-face{backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.card-face.card-back{position:absolute;inset:0;transform:rotateY(180deg);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:14px;padding:18px;border-radius:var(--r,16px);overflow:hidden;
+  background:radial-gradient(120% 90% at 50% 0%,color-mix(in srgb,var(--card-c,#fff) 16%,transparent),transparent 60%),var(--surface,#15101d)}
+/* holo-foil animated border on the back */
+.card-back::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:3px;pointer-events:none;
+  background:var(--foil);background-size:300% 300%;animation:foilShift 5s linear infinite;
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+@keyframes foilShift{0%{background-position:0% 50%}100%{background-position:300% 50%}}
+/* low-opacity deco grid */
+.card-back::after{content:"";position:absolute;inset:0;opacity:.06;pointer-events:none;
+  background:repeating-linear-gradient(45deg,#fff 0 1px,transparent 1px 11px)}
+.cb-emblem{width:54%;filter:drop-shadow(0 0 12px color-mix(in srgb,var(--card-c,#fff) 55%,transparent));z-index:1}
+.cb-word{z-index:1;font-family:var(--font-display);text-transform:uppercase;letter-spacing:.12em;font-size:12px;color:#fff;opacity:.85}
+.cb-actions{z-index:1;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.cb-actions button{font-family:var(--font-sans);font-weight:700;font-size:11px;padding:7px 12px;border-radius:999px;cursor:pointer;border:1px solid var(--line-2,#fff3)}
+.cb-add{background:var(--card-c,#E5202E);color:#120512;border-color:transparent}
+.cb-details{background:transparent;color:#fff}
+.flip-hint{position:absolute;top:9px;right:9px;z-index:5;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;
+  background:rgba(8,4,12,.55);border:1px solid var(--card-c,#fff);color:var(--card-c,#fff);font-size:13px;cursor:pointer;opacity:0;transition:opacity .18s}
+.product-card:hover .flip-hint{opacity:1}
+
+/* foil specular sweep on flip + pointer-tilt hue (foil cards) */
+.product-card.foil .card-front .card-art::after{will-change:background-position}
+.product-card.flipping .card-front .card-art::before{content:"";position:absolute;inset:0;z-index:4;pointer-events:none;
+  background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.7) 50%,transparent 60%);transform:translateX(-120%);
+  animation:specSweep .55s ease-in-out}
+@keyframes specSweep{to{transform:translateX(120%)}}
+
+/* slabs: no flip — parallax tilt + specular streak */
+.product-card.slab{perspective:900px}
+.product-card.slab .card-flip{transition:transform .2s ease-out}
+.product-card.slab .card-art::after{content:"";position:absolute;inset:0;pointer-events:none;mix-blend-mode:screen;opacity:.5;
+  background:linear-gradient(115deg,transparent 42%,rgba(255,255,255,.45) 50%,transparent 58%);
+  background-size:250% 100%;animation:slabStreak 4s ease-in-out infinite}
+@keyframes slabStreak{0%,100%{background-position:120% 0}50%{background-position:-20% 0}}
+
+@media(prefers-reduced-motion:reduce){
+  .pack{animation:none}
+  .pack.ripping .pack-half,.pack.ripping .pack-burst,.pack.ripping .pack-shards i,.pack.ripping .pack-spill b{animation:none!important;opacity:0!important}
+  .pack.ripping .pack-img{opacity:0}
+  .card-flip,.rip-wipe.go{transition:opacity .2s!important;animation:none!important}
+  .card-back::before,.slab .card-art::after,.pack:hover .pack-shine{animation:none!important}
+}

@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cuban Rippers — Miami TCG Shop</title>
+  <meta name="description" content="Cuban Rippers — Miami's TCG shop. Pokémon, Sports, One Piece & Dragon Ball. Raw singles & sealed. DM @cubanrippers305 to buy." />
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon-180.png" />
+  <meta property="og:title" content="Cuban Rippers — Miami TCG" />
+  <meta property="og:description" content="Your one stop shop for everything TCG. Pokémon · Sports · One Piece · Dragon Ball. DM @cubanrippers305." />
+  <meta property="og:image" content="og-image.png" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <!-- Picaso brand skin (dark: black/red/purple/holo) + devdemon pack-rip/flip layer -->
+  <link rel="stylesheet" href="brand.css" />
+  <link rel="stylesheet" href="interactions.css" />
+  <!-- Miami-Cuban atmosphere + tabs layer (on top of the dark base) -->
+  <link rel="stylesheet" href="miami.css" />
+  <!-- funky-but-curated display faces (sections: Bungee · pack names: Luckiest Guy) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Luckiest+Guy&family=Alfa+Slab+One&display=swap" rel="stylesheet" />
+  <!-- RESTRUCTURE layer: single-scroll Miami strip, side-rail, deck, mosaic, map band -->
+  <link rel="stylesheet" href="restructure.css" />
+  <!-- functional widgets brand.css doesn't cover -->
+  <style>
+    .cart-backdrop{position:fixed;inset:0;background:rgba(5,3,8,.6);z-index:calc(var(--z-drawer,90) - 1)}
+    .cart-items{flex:1;overflow-y:auto}
+    .cart-meta{min-width:0}
+    .cart-qty{display:inline-flex;align-items:center;gap:9px;margin-top:6px}
+    .cart-qty button{width:24px;height:24px;border-radius:7px;border:1px solid var(--line-2);background:var(--surface-2);color:var(--ink);cursor:pointer;font-size:15px;line-height:1}
+    .cart-qty b{min-width:16px;text-align:center}
+    .cart-rm{margin-left:6px;background:none;border:none;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:12px}
+    .cart-empty{padding:48px 20px;text-align:center;color:var(--muted);font-family:var(--font-display);letter-spacing:.04em;text-transform:uppercase}
+    .grid-empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:44px;font-family:var(--font-display);text-transform:uppercase;letter-spacing:.05em}
+    .modal-info .card-set{color:var(--muted);font-size:13px}
+    .modal-info h3{font-family:var(--font-display);font-size:26px;text-transform:uppercase;margin:6px 0}
+    .modal-info .card-price{font-family:var(--font-display);font-size:28px;margin:8px 0 16px}
+    .modal-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+    .modal-row span{color:var(--muted)} .modal-row b{color:var(--ink)}
+    .modal-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+    .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);z-index:200;background:var(--surface-2);color:var(--ink);border:1px solid var(--line-2);border-radius:999px;padding:12px 22px;font-family:var(--font-sans);font-weight:700;font-size:14px;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.2s}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    [hidden]{display:none!important}
+    .card-soldout .dm-btn{filter:grayscale(1);opacity:.6;cursor:default}
+  </style>
+</head>
+<body id="top">
+  <!-- holo announce strip -->
+  <div class="announce-bar"><b>Your one-stop shop for everything TCG</b> · singles · sealed · <b>DM @CUBANRIPPERS305 TO BUY</b></div>
+
+  <!-- un-boxed top: only a floating cart, top-right -->
+  <nav class="topnav">
+    <button class="cart-btn" id="cartBtn">Cart <span class="cart-count" id="cartCount">0</span></button>
+  </nav>
+
+  <!-- centered STACKED brand lockup (headliner) — crest ghosted behind the words -->
+  <header class="masthead">
+    <div class="mast">
+      <span class="mast-crest" aria-hidden="true"></span>
+      <span class="mast-cuban">Cuban</span>
+      <span class="mast-rippers">Rippers</span>
+      <span class="cr-flag mast-flag" aria-hidden="true"></span>
+    </div>
+    <a class="scroll-cue" href="#home" aria-label="Scroll down">
+      <span class="scroll-cue-label">Scroll</span>
+      <span class="scroll-cue-chev"></span>
+    </a>
+  </header>
+
+  <!-- VERTICAL SIDE-RAIL — the new navigator (Art-Deco Miami) -->
+  <nav class="side-rail" id="sideRail" aria-label="Sections">
+    <a class="rail-link is-on" data-section="home" href="#home"><span class="rail-dot"></span><span class="rail-label">Open</span></a>
+    <a class="rail-link" data-section="shop" href="#shop"><span class="rail-dot"></span><span class="rail-label">Shop</span></a>
+    <a class="rail-link" data-section="visit" href="#location"><span class="rail-dot"></span><span class="rail-label">Visit</span></a>
+  </nav>
+
+  <main class="strip">
+
+    <!-- ===================== SEG 1 · OPEN (hero + the deck) ===================== -->
+    <section class="seg seg-home" id="home" data-panel="home">
+      <!-- hero — asymmetric Miami sign -->
+      <header class="hero">
+        <div class="hero-inner reveal">
+          <span class="b305">Miami <b>·</b> 305 <b>·</b> TCG Vault</span>
+          <h1>Rip it.<br><span class="red">Pull it.</span><br><span class="holo">Run it back.</span></h1>
+          <p>Your one-stop shop for everything TCG — Pokémon, Sports, One Piece &amp; Dragon Ball. Raw singles &amp; sealed. Pull something real in the 305.</p>
+          <div class="hero-cta">
+            <a class="btn-primary" href="#deck">Deal me in →</a>
+            <a class="btn-ghost" href="#location">DM to buy</a>
+          </div>
+        </div>
+        <div class="hero-spine" aria-hidden="true">RIPPERS</div>
+      </header>
+
+      <!-- THE DECK — packs as a fanned dealer's hand -->
+      <section class="deck reveal" id="deck">
+        <div class="deck-band" aria-hidden="true"></div>
+        <div class="sec-head"><div class="sec-title">The <span class="accent">deck</span></div><div class="sec-sub">Deal yourself in — tap a pack, rip it open</div></div>
+        <div class="packs" id="packs"><!-- app.js renders the 4 full-size rip-open packs --></div>
+        <div class="deck-foot">Four worlds. One vault. <b>Pokémon · Sports · One Piece · Dragon Ball.</b></div>
+      </section>
+    </section>
+
+    <!-- ===================== SEG 2 · THE CASE (shop) ===================== -->
+    <section class="seg seg-shop" data-panel="shop">
+      <section class="shop reveal" id="shop">
+        <div class="sec-head"><div class="sec-title">In the <span class="accent">case</span></div><div class="sec-sub">The vault — high-value chase cards, every one $1,000+. DM to lock it.</div></div>
+
+        <!-- cinematic grail band -->
+        <div class="grail" id="grail"><!-- app.js renders the featured grail --></div>
+
+        <!-- shop with a vertical filter rail (restructured from top pills) -->
+        <div class="shop-layout">
+          <aside class="shop-aside">
+            <div class="aside-title">Filter</div>
+            <div class="shop-toolbar" id="shopToolbar">
+              <button class="filter is-active" data-cat="all">All</button>
+              <span class="aside-div"></span>
+              <button class="filter" data-cat="pokemon">Pokémon</button>
+              <button class="filter" data-cat="sports">Sports</button>
+              <button class="filter" data-cat="onepiece">One Piece</button>
+              <button class="filter" data-cat="dbz">Dragon Ball</button>
+            </div>
+            <p class="aside-note">Every card in the case is <b>$1,000+</b>. DM <b>@cubanrippers305</b> to lock anything.</p>
+          </aside>
+          <div class="product-grid" id="productGrid"><!-- app.js --></div>
+        </div>
+      </section>
+    </section>
+
+    <!-- ===================== SEG 4 · VISIT (map band + contact) ===================== -->
+    <section class="seg seg-visit" data-panel="visit">
+      <section class="location reveal" id="location">
+        <div class="sec-head"><div class="sec-title">Come <span class="accent">rip</span> with us</div><div class="sec-sub">In-store · Miami, FL</div></div>
+        <div class="visit-band">
+          <div class="loc-map" role="img" aria-label="Map — 9357 SW 40th St, Miami FL"></div>
+          <div class="loc-card">
+            <h3>Visit the shop</h3>
+            <div class="loc-row"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.3-7-11a7 7 0 0 1 14 0c0 4.7-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span><div><b>Cuban Rippers</b><br>9357 SW 40th St, Miami, FL 33165</div></div>
+            <div class="loc-row"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div>Mon–Thu <b>12–8</b> · Fri–Sat <b>12–10</b> · Sun <b>1–6</b></div></div>
+            <div class="loc-row"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-12.2 7.6L3 21l1.9-5.8A8.5 8.5 0 1 1 21 11.5z"/></svg></span><div>DM <b>@cubanrippers305</b> to reserve or buy</div></div>
+            <div class="loc-actions">
+              <a class="ig-btn" id="igLink" href="https://instagram.com/cubanrippers305" target="_blank" rel="noopener">DM @cubanrippers305</a>
+              <button class="btn-ghost" id="sendCartBtn">Send my cart</button>
+            </div>
+            <p class="loc-fineprint">No online checkout yet — slide into the DMs and we'll lock it in. New heat drops every week.</p>
+          </div>
+        </div>
+      </section>
+    </section>
+
+  </main>
+
+  <footer class="site-footer"><div class="ft">
+    <a class="brand-slot" href="#top"><img src="_cubanrippers/logo.png" alt="Cuban Rippers logo" />CUBAN <span class="cr-r">RIPPERS</span><span class="cr-flag" aria-hidden="true"></span></a>
+    <span>© 2026 Cuban Rippers · 9357 SW 40th St, Miami FL · @cubanrippers305</span>
+  </div></footer>
+
+  <!-- holo wipe for pack-rip routing -->
+  <div class="rip-wipe" id="ripWipe"></div>
+
+  <!-- product modal -->
+  <div class="modal" id="modal" hidden>
+    <div class="modal-card">
+      <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
+      <div class="modal-art" id="modalArt"></div>
+      <div class="modal-info" id="modalInfo"></div>
+    </div>
+  </div>
+
+  <!-- cart -->
+  <div class="cart-backdrop" id="cartBackdrop" hidden></div>
+  <aside class="cart-drawer" id="cartDrawer" hidden>
+    <div class="cart-head">Your Cart <button class="modal-close" id="cartClose" aria-label="Close cart">&times;</button></div>
+    <div class="cart-items" id="cartItems"></div>
+    <p class="cart-empty" id="cartEmpty">Cart's empty — add some heat.</p>
+    <div class="cart-foot">
+      <div class="cart-subtotal"><span>Subtotal</span><span><span class="cur">$</span><b id="cartSubtotal">0</b></span></div>
+      <button class="checkout-btn" id="checkoutBtn">Reserve via DM</button>
+      <p class="cart-note" style="text-align:center;color:var(--muted);font-size:11.5px;margin:10px 0 0">In-store &amp; DM sales only — no card needed online.</p>
+    </div>
+  </aside>
+
+  <script src="products.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

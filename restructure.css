@@ -1,0 +1,450 @@
+/* ============================================================
+   CUBAN RIPPERS — RESTRUCTURE LAYER (devdemon).
+   Loads LAST (after brand.css → interactions.css → miami.css).
+   Turns the 4-tab SPA into ONE continuous Miami "strip" you scroll:
+   vertical side-rail nav · asymmetric hero + live ticker ·
+   THE DECK (packs as a fanned dealer's hand) · THE CASE (filter-rail
+   mosaic) · ON AIR breaks · full-bleed Art-Deco map band.
+   SOUL LOCKED: zero new brand colors — everything via existing tokens
+   (--bg/--accent/--purple/--accent-2/--foil/--cat-*/--sunset/--miami-*).
+   Reuses every generated asset (packs, hero-foil, logo, foil-texture).
+   ============================================================ */
+
+/* ---- single-scroll plumbing: kill the horizontal tabs, stack every panel ---- */
+html{scroll-behavior:smooth}
+.tabs{display:none!important}                 /* old horizontal tab bar — gone */
+.tab-panel{display:block!important;animation:none!important;opacity:1!important}
+.seg{position:relative}
+[id]{scroll-margin-top:84px}                  /* clear the sticky topnav on anchor jumps */
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* UN-BOXED top: cart floats fixed top-right, OUT OF FLOW (so it doesn't push the 100vh
+   masthead down — that was making the opening lockup sit low) */
+/* cart: fixed top-right, sitting just BELOW the announce strip on the dark masthead (not on
+   the light strip), clean edge padding, stays put on scroll */
+.topnav{position:fixed;top:42px;right:18px;left:auto;bottom:auto;z-index:63;display:flex;width:auto !important;margin:0 !important;
+  background:transparent !important;backdrop-filter:none !important;border:none !important;padding:0 !important}
+.topnav .cart-btn{box-shadow:var(--glow),0 0 0 1px rgba(255,255,255,.14),0 6px 18px rgba(0,0,0,.45);padding:10px 18px}
+@media(max-width:560px){.topnav{top:58px;right:12px} .topnav .cart-btn{padding:9px 15px;font-size:12.5px}}
+.topnav::after{display:none !important}
+
+/* content centers in the TRUE viewport — the fixed side-rail floats over the left gutter,
+   no padding offset pushing everything right (Jay: center everything) */
+.strip{position:relative}
+
+/* announce bar: out of flow (absolute, scrolls away) so it doesn't push the 100vh masthead
+   down; full text always shows cleanly — responsive size + wraps, never clipped */
+.announce-bar{position:absolute;top:0;left:0;right:0;z-index:58;
+  white-space:normal;font-size:clamp(10px,2.1vw,12.5px);letter-spacing:.03em;line-height:1.5;padding:8px 16px}
+
+/* ===================== VERTICAL SIDE-RAIL ===================== */
+.side-rail{position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:55;
+  display:flex;flex-direction:column;align-items:center;gap:26px;
+  width:92px;padding:18px 0;
+  background:linear-gradient(180deg,rgba(21,16,29,.0),rgba(21,16,29,.55) 12%,rgba(21,16,29,.55) 88%,rgba(21,16,29,0));
+  -webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+/* foil-texture earns its place: ghosted vertically down the rail */
+.side-rail::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.10;
+  background:url('_assets/gen/cubanrippers/foil-texture.png') center/cover;
+  -webkit-mask:linear-gradient(180deg,transparent,#000 18%,#000 82%,transparent);
+          mask:linear-gradient(180deg,transparent,#000 18%,#000 82%,transparent)}
+.rail-spine{font-family:var(--font-display);font-size:13px;letter-spacing:.32em;color:var(--miami-teal);
+  writing-mode:vertical-rl;text-orientation:mixed;margin-bottom:14px;opacity:.85;text-shadow:0 0 12px rgba(22,224,200,.5)}
+.rail-link{position:relative;display:flex;flex-direction:column;align-items:center;gap:7px;
+  padding:12px 4px;width:100%;color:var(--ink-2);cursor:pointer;transition:.18s}
+.rail-dot{width:11px;height:11px;border-radius:50%;border:2px solid var(--line-2);background:transparent;transition:.18s}
+.rail-label{font-family:var(--font-display);font-size:11px;letter-spacing:.1em;text-transform:uppercase;transition:.18s}
+.rail-link:hover{color:#fff}
+.rail-link:hover .rail-dot{border-color:var(--accent);box-shadow:0 0 12px var(--accent)}
+.rail-link.is-on{color:#fff}
+.rail-link.is-on .rail-dot{background:var(--accent);border-color:var(--accent);
+  box-shadow:0 0 14px var(--accent),0 0 0 4px rgba(229,32,46,.18)}
+.rail-link.is-on::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:3px;background:var(--sunset)}
+
+/* mobile: side-rail becomes a slim sticky bottom bar */
+@media(max-width:899px){
+  .side-rail{flex-direction:row;justify-content:space-around;top:auto;bottom:0;left:0;right:0;width:100%;
+    transform:none;gap:0;padding:6px 8px;background:rgba(11,8,16,.94);border-top:1px solid var(--line);backdrop-filter:blur(14px)}
+  .side-rail::before{opacity:.07;-webkit-mask:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+  .rail-spine{display:none}
+  .rail-link{flex-direction:column;gap:5px;padding:6px 4px}
+  .rail-link.is-on::before{left:14px;right:14px;top:0;bottom:auto;width:auto;height:3px}
+  body{padding-bottom:64px}
+}
+
+/* ===================== HERO — asymmetric Miami sign ===================== */
+/* tight to the masthead: small top padding + shorter hero so the slogan sits right under
+   the CUBAN/RIPPERS lockup (Jay: kill the dead space / floating feel — one cohesive unit) */
+.seg-home{padding-top:0}
+.hero{align-items:center;min-height:clamp(300px,40vh,392px)}
+.hero-inner{padding-block:clamp(6px,1.4vw,14px);max-width:620px}
+/* slogan only: a touch more tracking + leading so each line breathes (Jay — subtle, not blown apart) */
+.hero h1{font-size:clamp(48px,7vw,92px);letter-spacing:.045em;line-height:1.06}
+.hero .b305{margin-bottom:18px}
+/* giant vertical RIPPERS spine on the right edge of the hero */
+.hero-spine{position:absolute;right:clamp(10px,3vw,34px);top:50%;transform:translateY(-50%);z-index:1;pointer-events:none;
+  writing-mode:vertical-rl;text-orientation:upright;font-family:var(--font-display);
+  font-size:clamp(58px,11vh,120px);line-height:.86;letter-spacing:-.04em;color:transparent;
+  background:var(--foil);background-size:200% 200%;-webkit-background-clip:text;background-clip:text;
+  -webkit-text-stroke:1px rgba(255,255,255,.16);opacity:.5;animation:holoslide 9s linear infinite}
+@media(max-width:760px){.hero-spine{display:none}}
+
+/* live "now ripping" ticker */
+.ticker{position:relative;overflow:hidden;margin:14px auto 0;width:min(var(--container,1180px),calc(100% - 48px));
+  border:1px solid var(--line);border-radius:var(--r-pill);background:rgba(21,16,29,.6)}
+.ticker::before,.ticker::after{content:"";position:absolute;top:0;bottom:0;width:60px;z-index:2;pointer-events:none}
+.ticker::before{left:0;background:linear-gradient(90deg,var(--surface),transparent)}
+.ticker::after{right:0;background:linear-gradient(270deg,var(--surface),transparent)}
+.ticker-row{display:inline-flex;gap:34px;white-space:nowrap;padding:9px 0;animation:tickerSlide 26s linear infinite}
+.ticker-row span{font-family:var(--font-display);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+.ticker-row span:nth-child(7n+1){color:var(--miami-teal)}
+@keyframes tickerSlide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.ticker-row{animation:none}}
+
+/* ===================== THE DECK — fanned dealer's hand ===================== */
+.deck{position:relative;margin-top:clamp(40px,6vw,72px);padding-bottom:30px;overflow:visible}
+/* the decorative foil band stays contained via its own radial mask; .deck must NOT clip
+   the rip-animation shards/spill or the hover-lifted pack */
+/* foil-texture band glowing behind the hand */
+.deck-band{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);width:min(880px,92%);height:min(440px,52vw);
+  z-index:0;pointer-events:none;opacity:.16;border-radius:50%;filter:blur(2px);
+  background:url('_assets/gen/cubanrippers/foil-texture.png') center/cover;
+  -webkit-mask:radial-gradient(60% 60% at 50% 50%,#000,transparent 72%);mask:radial-gradient(60% 60% at 50% 50%,#000,transparent 72%)}
+.deck .sec-head,.deck .packs,.deck-foot{position:relative;z-index:1}
+.deck-foot{text-align:center;margin-top:34px;color:var(--muted);font-size:13.5px;letter-spacing:.02em}
+.deck-foot b{color:var(--ink-2);font-weight:700}
+
+/* desktop: overlap the 4 packs into a hand; hover focuses one.
+   Threshold aligned to 900px so the fan, the vertical side-rail, and the
+   strip's left padding all switch together (no 760–899px seam). */
+@media(min-width:900px){
+  /* THE DECK is the page's hero centerpiece — big fanned hand (Jay: "more of a main thing") */
+  /* tight: packs sit right under the heading — min-height matches the pack content so the
+     flex-end baseline doesn't leave dead space above (Jay: kill the empty gap) */
+  .deck .packs{display:flex;justify-content:center;align-items:flex-end;gap:0;perspective:1700px;
+    padding:6px 0 36px;min-height:0}
+  /* each pack carries its fanned angle (--fr) + drop (--fy) as vars, so hover/select can
+     lift IN PLACE while KEEPING the angle (Jay: don't upright it to vertical) */
+  .deck .pack{animation:none;width:clamp(200px,23vw,300px);margin-inline:-46px;transform-origin:bottom center;
+    transform:rotate(var(--fr,0deg)) translateY(var(--fy,0px));
+    transition:transform .3s cubic-bezier(.34,1.3,.5,1),filter .25s;will-change:transform}
+  .deck .pack:nth-child(1){--fr:-14deg;--fy:42px;z-index:1}
+  .deck .pack:nth-child(2){--fr:-5deg; --fy:8px; z-index:2}
+  .deck .pack:nth-child(3){--fr:5deg;  --fy:8px; z-index:3}
+  .deck .pack:nth-child(4){--fr:14deg; --fy:42px;z-index:4}
+  /* NO container hover-spread — margins stay fixed so neighbors never move (no glitch).
+     Hover = lift + scale + shine IN PLACE, KEEPING the fanned angle (no upright). */
+  .deck .pack:hover{transform:rotate(var(--fr,0deg)) translateY(calc(var(--fy,0px) - 46px)) scale(1.08)!important;
+    z-index:20;filter:drop-shadow(0 30px 54px rgba(0,0,0,.62))}
+  .deck .pack.ripping{transform:rotate(var(--fr,0deg)) translateY(calc(var(--fy,0px) - 26px)) scale(1.05)!important;z-index:30}
+  .deck .pack-cta{bottom:-26px}
+}
+/* scale the glow band behind the bigger hand to match */
+@media(min-width:900px){.deck-band{width:min(1040px,94%);height:min(540px,58vw)}}
+
+/* PACKS are transparent foil-pouch cutouts now (Higgsfield bg-removed) — the pouch
+   IS the button, no tile/frame/scene.
+   SHINE: the overlay is pinned STATIC and clipped to the pouch silhouette (mask = the pack
+   image alpha). The gleam travels by animating background-POSITION (not the element's
+   transform), so a narrow streak glides across the pouch FACE — enters one edge, exits the
+   other — and NOTHING renders outside the pouch outline. (Transform-sweep would drag the
+   pouch-shaped mask off into the empty space beside the pack — the bug Jay caught.) */
+.pack-shine{
+  inset:0;
+  transform:none !important;                 /* kill the interactions.css translateX sweep */
+  mix-blend-mode:screen;
+  /* tight diagonal gleam (not a fat bar); slides via background-position */
+  background:linear-gradient(108deg,
+    transparent 45%,
+    rgba(255,255,255,.45) 48.5%,
+    rgba(255,255,255,.95) 50%,
+    rgba(255,255,255,.45) 51.5%,
+    transparent 55%) !important;
+  background-repeat:no-repeat !important;
+  background-size:250% 100% !important;
+  background-position:135% 0 !important;      /* gleam parked just off one edge */
+  /* clip strictly to THIS pouch's shape, pinned to where the pouch actually is */
+  -webkit-mask:var(--pack-src) center/contain no-repeat;
+          mask:var(--pack-src) center/contain no-repeat;
+}
+.pack:hover .pack-shine{opacity:1 !important;animation:packGleam 1.15s ease-in-out infinite !important}
+@keyframes packGleam{
+  0%{background-position:135% 0}
+  100%{background-position:-35% 0}
+}
+@media(prefers-reduced-motion:reduce){.pack:hover .pack-shine{animation:none !important;opacity:0 !important}}
+/* soften the per-category aura so the isolated pouch reads as a clean cutout, not a block */
+.deck .pack-glow{opacity:.20}
+.deck .pack:hover .pack-glow{opacity:.5}
+
+/* ===================== THE CASE — filter-rail + cinematic grail ===================== */
+.shop .grail{margin-bottom:30px}
+.shop-layout{display:grid;grid-template-columns:230px 1fr;gap:26px;align-items:start}
+.shop-aside{position:sticky;top:96px;align-self:start;
+  background:linear-gradient(180deg,var(--surface),rgba(21,16,29,.4));border:1px solid var(--line);
+  border-radius:var(--r);padding:18px 16px}
+.aside-title{font-family:var(--font-display);font-size:14px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--miami-teal);margin-bottom:14px}
+.shop-aside .shop-toolbar{flex-direction:column;align-items:stretch;gap:8px;margin:0}
+.shop-aside .filter{text-align:left}
+.aside-div{height:1px;background:var(--line);margin:6px 2px}
+.aside-note{margin:16px 2px 0;color:var(--muted);font-size:11.5px;line-height:1.5}
+.aside-note b{color:var(--ink-2)}
+/* mosaic-ish grid: 3-up with the first tile featured larger */
+.shop-layout .product-grid{grid-template-columns:repeat(3,1fr)}
+.shop-layout .product-grid .product-card:first-child{grid-column:span 2;grid-row:span 2}
+@media(max-width:1000px){
+  .shop-layout{grid-template-columns:1fr}
+  .shop-aside{position:static;top:auto}
+  .shop-aside .shop-toolbar{flex-direction:row;flex-wrap:wrap}
+  .shop-layout .product-grid{grid-template-columns:repeat(2,1fr)}
+  .shop-layout .product-grid .product-card:first-child{grid-column:span 2;grid-row:auto}
+}
+@media(max-width:560px){
+  .shop-layout .product-grid .product-card:first-child{grid-column:auto}
+}
+
+/* ===================== ON AIR — broadcast breaks ===================== */
+.onair-bar{display:inline-flex;align-items:center;gap:10px;margin-bottom:16px;
+  font-family:var(--font-display);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#fff;
+  background:rgba(207,20,43,.14);border:1px solid rgba(207,20,43,.5);border-radius:var(--r-pill);padding:7px 16px}
+.rec{width:10px;height:10px;border-radius:50%;background:var(--cuba-red);box-shadow:0 0 12px var(--cuba-red);
+  animation:recBlink 1.4s ease-in-out infinite}
+@keyframes recBlink{0%,100%{opacity:1}50%{opacity:.25}}
+@media(prefers-reduced-motion:reduce){.rec{animation:none}}
+/* give the breaks hero a faint broadcast frame */
+.breaks-hero{padding:24px;border:1px solid var(--line);border-radius:var(--r);
+  background:radial-gradient(120% 90% at 90% 0%,rgba(255,45,142,.10),transparent 55%),rgba(21,16,29,.4)}
+
+/* ===================== VISIT — full-bleed map band + glass card ===================== */
+.visit-band{position:relative;border-radius:var(--r);overflow:hidden;border:1px solid var(--line-2)}
+.visit-band .loc-map{min-height:480px;width:100%;border:none!important;border-radius:0}
+.visit-band .loc-card{position:absolute;top:50%;right:28px;transform:translateY(-50%);max-width:380px;
+  background:rgba(15,11,22,.74);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  border:1px solid var(--line-2);box-shadow:var(--shadow)}
+.loc-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.loc-fineprint{margin:14px 0 0;color:var(--muted);font-size:12px;line-height:1.5}
+@media(max-width:760px){
+  .visit-band{overflow:visible}
+  .visit-band .loc-map{min-height:280px;border-radius:var(--r)}
+  .visit-band .loc-card{position:static;transform:none;max-width:none;margin-top:14px}
+}
+
+/* footer breathing room above the mobile bottom-bar */
+.site-footer{margin-top:64px}
+
+/* ============================================================
+   REFINEMENT v3 (Jay round 3): kill the rainbow + anchor palette to the
+   LOGO (red/royal-blue/white-silver on black), center the headliners +
+   hero, fix the Cuban flag. Done by OVERRIDING the design tokens at the
+   end of the cascade — brand.css/interactions.css/miami.css stay untouched;
+   every token consumer re-colors automatically.
+   ============================================================ */
+:root{
+  /* — logo-true palette — */
+  --accent:#CC1828;          /* logo RED (primary) */
+  --accent-2:#0A47A8;        /* logo ROYAL BLUE (secondary) */
+  --gold:#CC1828;            /* was holo-magenta -> red */
+  --sun:#0A47A8;             /* was purple -> blue */
+  --purple:#0A47A8;          /* kill purple -> blue */
+  /* category accents collapse from a 4-hue rainbow to a disciplined two-tone:
+     red for pokemon/onepiece, blue for sports/dbz (both straight off the logo) */
+  --cat-pkmn:#CC1828; --cat-onepiece:#CC1828;
+  --cat-sports:#0A47A8; --cat-dbz:#0A47A8;
+  /* restrained "chrome" foil — silver/white with faint red+blue bookends (NOT a rainbow) */
+  --foil:linear-gradient(110deg,#5b7bb5 0%,#c2cde0 24%,#ffffff 50%,#edd2d6 74%,#cf5560 100%);
+  --glow:0 0 22px rgba(204,24,40,.40);
+  /* neutralize miami's neon tokens to the same family */
+  --miami-pink:#CC1828; --miami-coral:#CC1828; --miami-teal:#9fb3d8; --miami-indigo:#0A47A8;
+  --sunset:linear-gradient(105deg,#CC1828,#0A47A8);
+  --cuba-red:#CC1828; --cuba-blue:#0A47A8; --cuba-white:#f4f2f5;
+}
+/* FULL-PAGE BACKGROUND (Jay): the file_76 battlefield spans the ENTIRE site, fixed behind
+   every section (both body pseudos are already position:fixed inset:0 z-index:0, behind the
+   z-index:1 content). ::before = the image, ::after = a global scrim for legibility. */
+body::before{background:url('_assets/gen/cubanrippers/hero-bg-logo.jpg') center center/cover no-repeat !important}
+/* the bg image is already pre-darkened, so a gentle center-weighted scrim is enough —
+   keeps content legible while the battlefield stays visible as atmosphere */
+body::after{background:
+  radial-gradient(95% 85% at 50% 47%, rgba(6,4,10,.52), rgba(6,4,10,.30) 100%),
+  linear-gradient(180deg, rgba(6,4,10,.14), rgba(6,4,10,.30)) !important}
+/* kill the left-edge "ocean sliver" — the holo foil-texture down the side-rail */
+.side-rail::before{display:none !important}
+.side-rail{background:linear-gradient(180deg,rgba(8,5,12,0),rgba(8,5,12,.5) 14%,rgba(8,5,12,.5) 86%,rgba(8,5,12,0)) !important}
+.deck-band{opacity:.07 !important;filter:saturate(.3) blur(2px)}
+
+/* kill remaining hardcoded magenta/purple gradients in buttons + panels */
+.ig-btn{background:linear-gradient(135deg,#CC1828 0%,#0A47A8 100%) !important}
+.checkout-btn{background:linear-gradient(135deg,#CC1828,#0A47A8) !important}
+.brand-slot img,.brand-slot .logo{box-shadow:0 0 0 2px rgba(255,255,255,.12),0 0 18px rgba(204,24,40,.45) !important}
+.card-hot{box-shadow:0 0 12px rgba(204,24,40,.5) !important}
+.b305{border-color:var(--accent-2) !important;box-shadow:0 0 14px rgba(10,71,168,.30) inset,0 0 12px rgba(204,24,40,.18) !important}
+.b305 b{color:var(--accent) !important}
+.grail{background:radial-gradient(120% 100% at 0% 0%,rgba(204,24,40,.16),transparent 55%),radial-gradient(100% 100% at 100% 100%,rgba(10,71,168,.16),transparent 55%),var(--surface) !important}
+/* VISIT map = REAL Esri satellite of 9357 SW 40th St, centered on the shop (marker at center) */
+.loc-map{background:#0c0a12 url('_assets/gen/cubanrippers/visit-satellite.jpg') center/cover no-repeat !important;color:transparent!important}
+/* centered location marker — glowing red dot with white ring, sits on the shop */
+.loc-map::before{content:"";left:50%!important;top:50%!important;width:18px!important;height:18px!important;
+  border-radius:50%!important;transform:translate(-50%,-50%)!important;background:var(--accent)!important;
+  border:3px solid #fff!important;box-shadow:0 0 0 6px rgba(204,24,40,.30),0 0 0 1px rgba(0,0,0,.4),0 3px 12px rgba(0,0,0,.6)!important;z-index:3!important}
+/* legible address caption pill, bottom-center */
+.loc-map::after{content:"9357 SW 40TH ST · MIAMI, FL 33165"!important;left:50%!important;right:auto!important;bottom:16px!important;
+  transform:translateX(-50%)!important;white-space:nowrap;padding:7px 14px;border-radius:999px;
+  background:rgba(8,5,12,.74);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.14);
+  font-family:var(--font-display)!important;font-size:11px!important;letter-spacing:.12em!important;color:#fff!important;z-index:3!important}
+.tl-tag{background:var(--accent-2) !important;color:#fff !important}
+.tl-day span{color:#9fb3d8 !important}
+/* section accent word: solid red, not a gradient (was --sunset clip) */
+.sec-title .accent{background:none !important;-webkit-text-fill-color:var(--accent) !important;color:var(--accent) !important}
+.ticker-row span:nth-child(7n+1){color:var(--accent) !important}
+
+/* ===================== CENTERING (Jay 1 & 2) ===================== */
+/* section headliners: centered stack instead of left-title / right-sub */
+.sec-head{flex-direction:column;align-items:center;text-align:center;gap:7px}
+.sec-sub{text-align:center}
+.onair-bar{display:flex;width:max-content;margin-left:auto;margin-right:auto}
+/* hero: center the big headline + intro; darken + DESATURATE the neon-palm photo so it
+   reads as a moody red/blue-tinted backdrop (not a rainbow scene) and the centered text leads */
+/* hero backdrop = the REAL horizontal logo (dark-red dungeon archway + reaper badge),
+   with a strong dark scrim (center-darkened so the centered headline/CTAs stay legible
+   over the busy badge, edges left atmospheric so the dungeon archway reads as branding) */
+.hero{justify-content:center;text-align:center;
+  /* hero is an OPEN banner over the FULL-PAGE fixed battlefield bg — no own image, no box, NO outline (Jay) */
+  background:transparent !important;border:0 !important;box-shadow:none !important;border-radius:0 !important}
+.hero::before{content:none}
+/* kill the miami.css .hero::after sunset glow — radial rgba(255,94,58,.14) at the hero's bottom
+   edge read as a "random red fading line" at the hero→deck seam (Jay) */
+.hero::after{content:none !important}
+.hero-inner{position:relative;z-index:2;margin-inline:auto;max-width:780px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.hero .b305{margin:0 auto 18px}
+.hero h1{font-size:clamp(46px,6.6vw,86px)}
+.hero p{margin-inline:auto;text-align:center}
+.hero-cta{justify-content:center}
+.hero-spine{display:none}            /* drop the asymmetric right-edge wordmark — cleaner centered hero */
+.deck-foot{text-align:center}
+
+/* ===================== CUBAN FLAG redo (Jay 5) ===================== */
+/* a crisp, correctly-proportioned mini Cuban flag: 5 stripes (3 blue / 2 white),
+   red hoist triangle with a white lone star. Clean, in the same logo red/white/blue. */
+.cr-flag{position:relative;display:inline-block;width:27px;height:16px;border-radius:2.5px;overflow:hidden;
+  vertical-align:middle;margin-left:9px;
+  background:repeating-linear-gradient(180deg,#0A47A8 0 3.2px,#f4f2f5 3.2px 6.4px) !important;
+  box-shadow:0 0 0 1px rgba(255,255,255,.16),0 1px 3px rgba(0,0,0,.5)}
+.cr-flag::before{content:"";position:absolute;left:0;top:0;width:0;height:0;
+  border-top:8px solid transparent;border-bottom:8px solid transparent;border-left:12px solid #CC1828;
+  background:none}
+.cr-flag::after{content:"★";position:absolute;left:1.6px;top:50%;transform:translateY(-50%);
+  color:#fff;font-size:7px;line-height:1;text-shadow:0 0 2px rgba(0,0,0,.4)}
+.site-footer .brand-slot .cr-flag{margin-left:9px}
+
+/* ===================== REAL LOGOS (Jay) ===================== */
+/* nav/footer brand mark = circular crop of the real crest (logo.png) — clean at small size */
+/* the bg-removed full emblem (file_75) as a subtle watermark behind the Breaks "ON AIR" section */
+.seg-breaks{position:relative}
+.seg-breaks::before{content:"";position:absolute;top:6%;left:50%;transform:translateX(-50%);
+  width:min(520px,66%);height:78%;z-index:0;pointer-events:none;opacity:.05;
+  background:url('_cubanrippers/logo-emblem.png') center top/contain no-repeat}
+.seg-breaks > *{position:relative;z-index:1}
+
+/* ===================== FUNKY-BUT-CURATED LETTERING (Jay) ===================== */
+/* Tight system, one family feel: sections = Bungee (bold blocky), packs = Luckiest Guy
+   (chunky playful). Personality via a hard brand-color drop-shadow + per-topic accent
+   color — NOT a ransom note of random fonts. */
+.sec-title{font-family:"Bungee",var(--font-display),sans-serif !important;
+  font-size:clamp(23px,3.1vw,37px);letter-spacing:0;line-height:1.1;
+  text-shadow:2px 3px 0 rgba(0,0,0,.5)}
+/* per-topic shadow: red for DECK + BREAKS, blue for CASE + VISIT */
+.seg-home .sec-title,.seg-breaks .sec-title{text-shadow:2px 3px 0 rgba(204,24,40,.55)}
+.seg-shop .sec-title,.seg-visit .sec-title{text-shadow:2px 3px 0 rgba(10,71,168,.55)}
+.seg-shop .sec-title .accent,.seg-visit .sec-title .accent{
+  -webkit-text-fill-color:var(--accent-2) !important;color:var(--accent-2) !important}
+/* pack names — chunky playful, per-pack color glow (var(--card-c)) already applied */
+.pack-name{font-family:"Luckiest Guy",var(--font-display),cursive !important;
+  font-weight:400;letter-spacing:.02em}
+/* the ON AIR badge + section sub keep Inter/Anton — the Bungee/Luckiest pairing is the funk */
+
+/* ===================== STACKED BRAND MASTHEAD (headliner, Jay) ===================== */
+/* CUBAN over RIPPERS over the Cuban flag — centered, big, Bungee-funky, crest ghosted behind */
+.masthead{position:relative;text-align:center;padding:14px 16px 0}
+.mast{position:relative;display:inline-flex;flex-direction:column;align-items:center;gap:0}
+/* (removed: the red->blue hairline under the flag — Jay flagged it as a "random red fading line") */
+.mast::after{content:none}
+/* the real crest, ghosted + centered BEHIND the words */
+.mast-crest{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);
+  width:clamp(330px,46vw,620px);aspect-ratio:886/1188;z-index:0;pointer-events:none;opacity:.26;
+  background:url('_cubanrippers/logo-emblem.png') center/contain no-repeat;
+  filter:drop-shadow(0 0 26px rgba(204,24,40,.28))}
+.mast-cuban,.mast-rippers{position:relative;z-index:1;font-family:"Bungee",var(--font-display),sans-serif;
+  text-transform:uppercase;line-height:.86;letter-spacing:.005em}
+.mast-cuban{font-size:clamp(56px,12vw,148px);color:#fff;text-shadow:3px 4px 0 rgba(0,0,0,.5)}
+.mast-rippers{font-size:clamp(56px,12vw,148px);color:var(--accent);text-shadow:3px 4px 0 rgba(204,24,40,.35),3px 4px 0 rgba(0,0,0,.4)}
+/* bigger, correctly-proportioned (2:1) Cuban flag under RIPPERS */
+.mast-flag{position:relative;z-index:1;width:52px;height:26px;border-radius:3px;margin:14px auto 0;
+  background:repeating-linear-gradient(180deg,#0A47A8 0 5.2px,#f4f2f5 5.2px 10.4px) !important}
+.mast-flag::before{border-top:13px solid transparent;border-bottom:13px solid transparent;border-left:20px solid #CC1828}
+.mast-flag::after{font-size:11px;left:3px}
+@media(max-width:560px){.mast-flag{width:42px;height:21px}.mast-flag::before{border-top:10.5px solid transparent;border-bottom:10.5px solid transparent;border-left:16px solid #CC1828}}
+
+/* ===================== SCROLL INTRO + RUGGED MASTHEAD + GLOW (v9, Jay) ===================== */
+/* #1 OPENING (behavior only — zero visual-style change): the masthead fills the first screen,
+   showing ONLY the brand lockup centered on the battlefield. Everything else lives below the
+   fold and reveals on scroll. */
+.masthead{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px}
+@supports (min-height:100svh){.masthead{min-height:100svh}}
+/* SUBTLE scroll FX (Jay): refine the old coarse section-fade into fine-grained, gentle, staggered
+   reveals on the CONTENT — nothing is repositioned, elements just ease into place as they enter.
+   .reveal wrappers are now inert containers (JS tags their children .fx / .fx-pack). */
+.reveal{opacity:1;transform:none}
+/* gentle fade + small rise (headlines, cards, visit card, masthead lockup) */
+.fx{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .65s cubic-bezier(.2,.7,.2,1);will-change:opacity,transform}
+.fx.in{opacity:1;transform:none}
+/* packs: same idea + a whisper of scale-lift */
+.fx-pack{opacity:0;transform:translateY(22px) scale(.965);transition:opacity .6s ease,transform .75s cubic-bezier(.2,.7,.2,1);will-change:opacity,transform}
+.fx-pack.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.fx,.fx-pack{opacity:1 !important;transform:none !important;transition:none !important}}
+
+/* masthead wordmark = Alfa Slab One (heavy chunky slab — Jay's pick). Slightly smaller clamp
+   than the condensed faces since the slab is wider/heavier. */
+.mast-cuban,.mast-rippers{font-family:"Alfa Slab One",var(--font-display),serif !important;
+  font-size:clamp(46px,9.6vw,126px) !important;letter-spacing:.004em;line-height:.94}
+/* #3 soft GLOW halo behind the letters — depth + presence, atmospheric (not neon) */
+.mast-cuban{text-shadow:0 0 22px rgba(255,255,255,.22),0 0 48px rgba(10,71,168,.30),3px 4px 0 rgba(0,0,0,.5)}
+.mast-rippers{text-shadow:0 0 24px rgba(204,24,40,.42),0 0 54px rgba(204,24,40,.26),3px 4px 0 rgba(0,0,0,.45)}
+/* soft radial ambiance behind the whole lockup */
+.mast::before{content:"";position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);z-index:-1;pointer-events:none;
+  width:clamp(320px,46vw,640px);height:clamp(220px,30vw,400px);
+  background:radial-gradient(60% 58% at 50% 40%,rgba(204,24,40,.20),transparent 70%),radial-gradient(55% 55% at 50% 62%,rgba(10,71,168,.16),transparent 72%);
+  filter:blur(10px)}
+/* CLEAR Korsa-style scroll indicator at the bottom of the opening: SCROLL label + bouncing
+   down-chevron, on-brand (white label, red/blue glow). Unmistakable but tasteful. */
+.scroll-cue{position:absolute;left:50%;bottom:30px;transform:translateX(-50%);z-index:4;
+  display:flex;flex-direction:column;align-items:center;gap:12px;cursor:pointer;
+  text-decoration:none;animation:cueFloat 2.2s ease-in-out infinite}
+.scroll-cue-label{font-family:"Bungee",var(--font-display),sans-serif;font-size:12px;letter-spacing:.34em;
+  text-transform:uppercase;color:#fff;text-shadow:0 0 12px rgba(10,71,168,.6),0 2px 4px rgba(0,0,0,.6);padding-left:.34em}
+.scroll-cue-chev{width:18px;height:18px;border-right:3px solid #fff;border-bottom:3px solid #fff;
+  transform:rotate(45deg);filter:drop-shadow(0 0 8px rgba(204,24,40,.7)) drop-shadow(0 0 3px rgba(10,71,168,.6));
+  animation:cueBounce 1.5s ease-in-out infinite}
+@keyframes cueFloat{0%,100%{opacity:.85}50%{opacity:1}}
+@keyframes cueBounce{0%,100%{transform:rotate(45deg) translate(-3px,-3px)}50%{transform:rotate(45deg) translate(3px,3px)}}
+@media(prefers-reduced-motion:reduce){.scroll-cue,.scroll-cue-chev{animation:none}}
+/* hide the scroll cue once the user scrolls past the opening */
+.scrolled .scroll-cue{opacity:0;transition:opacity .4s;pointer-events:none}
+
+/* ===================== FUNCTIONAL: real card images + breaks (wheel removed) ===================== */
+/* real card scans fill the card tile + grail; tags overlay on top */
+.card-art .real-card{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+.card-art .card-tag,.card-art .card-hot{z-index:2}
+.grail-art{position:relative}
+.grail-art .real-card{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit;z-index:1}
+.grail-art::after{z-index:2}
+/* breaks intro (replaces the ripper wheel) — centered, no void */
+.breaks-intro{text-align:center;max-width:640px;margin:6px auto 8px;
+  padding:30px 24px;border:1px solid var(--line);border-radius:var(--r);
+  background:radial-gradient(120% 100% at 50% 0%,rgba(204,24,40,.12),transparent 60%),rgba(21,16,29,.4)}
+.breaks-intro h3{font-family:"Bungee",var(--font-display),sans-serif;font-size:clamp(24px,3.4vw,38px);text-transform:uppercase;margin:0 0 12px;text-shadow:2px 3px 0 rgba(204,24,40,.5)}
+.breaks-intro p{color:var(--ink-2);font-size:16px;line-height:1.55;max-width:52ch;margin:0 auto 22px}
+
+/* link-per-card BUY CTA — renders only when a card has buy_url; brand-red = primary purchase */
+.buy-btn{background:linear-gradient(180deg,#ff3b48,var(--accent)) !important;color:#fff !important;
+  text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
