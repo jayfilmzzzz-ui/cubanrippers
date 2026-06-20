@@ -38,6 +38,22 @@
     secs.forEach((s) => io.observe(s));
   }
 
+  /* smooth scroll for all in-page anchor nav (side-rail Open/Store/Visit, hero CTAs,
+     scroll-cue). CSS scroll-behavior:smooth doesn't take on this layout (body overflow-x
+     makes the scrollport ambiguous), so drive it explicitly. scrollIntoView honors the
+     [id]{scroll-margin-top} offset so sections land cleanly below the fixed topnav. */
+  $$('a[href^="#"]').forEach((a) => {
+    a.addEventListener('click', (e) => {
+      const href = a.getAttribute('href');
+      if (!href || href === '#') return;
+      const target = document.querySelector(href);
+      if (!target) return;
+      e.preventDefault();
+      target.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+      if (history.pushState) history.pushState(null, '', href);
+    });
+  });
+
   /* store-photo lightbox */
   const shots = $$('.store-shot');
   const lb = $('#lightbox'), lbImg = $('#lbImg');
