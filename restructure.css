@@ -224,10 +224,14 @@ html{scroll-behavior:smooth}
   border:1px solid var(--line-2);box-shadow:var(--shadow)}
 .loc-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
 .loc-fineprint{margin:14px 0 0;color:var(--muted);font-size:12px;line-height:1.5}
-@media(max-width:760px){
+/* Below wide-desktop the glass card STACKS under the map (static) instead of floating over it.
+   Raised from 760px -> 1080px: at intermediate widths (~760-1080) the absolute 380px card was
+   overlapping/covering the satellite map + crowding the centered pin. The float-overlay look is
+   kept only where there is genuine room for it (>1080px). Stacked layout is the proven mobile one. */
+@media(max-width:1080px){
   .visit-band{overflow:visible}
-  .visit-band .loc-map{min-height:280px;border-radius:var(--r)}
-  .visit-band .loc-card{position:static;transform:none;max-width:none;margin-top:14px}
+  .visit-band .loc-map{min-height:clamp(260px,42vw,460px);border-radius:var(--r)}
+  .visit-band .loc-card{position:static;transform:none;max-width:none;margin-top:14px;border-radius:var(--r)}
 }
 
 /* footer breathing room above the mobile bottom-bar */
