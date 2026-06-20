@@ -224,6 +224,10 @@ html{scroll-behavior:smooth}
   border:1px solid var(--line-2);box-shadow:var(--shadow)}
 .loc-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
 .loc-fineprint{margin:14px 0 0;color:var(--muted);font-size:12px;line-height:1.5}
+/* tap-to-call number — on-brand, clearly tappable on mobile */
+.loc-tel{color:#fff;font-weight:700;letter-spacing:.01em;text-decoration:none;
+  border-bottom:1px solid rgba(204,24,40,.55);transition:color .15s,border-color .15s}
+.loc-tel:hover,.loc-tel:focus-visible{color:var(--accent);border-bottom-color:var(--accent)}
 /* Below wide-desktop the glass card STACKS under the map (static) instead of floating over it.
    Raised from 760px -> 1080px: at intermediate widths (~760-1080) the absolute 380px card was
    overlapping/covering the satellite map + crowding the centered pin. The float-overlay look is
